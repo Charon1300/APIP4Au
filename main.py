@@ -28,57 +28,103 @@ app.mount("/static", StaticFiles(directory = "static"), name = "static")
 
 templates = Jinja2Templates(directory = "templates")
 
-
+#frontend
 @app.get("/", include_in_schema=False, name="home")
-@app.get("/posts", include_in_schema=False, name="posts")
+@app.get("/characters", include_in_schema=False, name="characters")
 def home(request: Request, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Charaters))
-    posts = result.scalar().all()
+    result = db.execute(select(models.Character))
+    characters = result.scalars().all()
     #can include vars to templates with {"posts": posts}
-    return templates.TemplateResponse(request,"home.html", {"posts": posts, "title": "Home"})
+    return templates.TemplateResponse(request,"home.html", {"characters": characters, "title": "Home"})
 
-@app.get("/posts/{character_id}", include_in_schema = False)
+@app.get("/characters/{character_id}", include_in_schema = False)
 def post_page(request: Request, character_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Charaters).where(models.Charaters.id == character_id))
-    post = result.scalar().first()
-    if post:
-        title = post.title[:50]
-        return templates.TemplateResponse(request, "post.html", {"post": post, "title": title})
+    result = db.execute(select(models.Character).where(models.Character.id == character_id))
+    character = result.scalars().first()
+    if character:
+        name = character.name[:50]
+        
+        return templates.TemplateResponse(request, "post.html", {"character": character, "name": name})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
             
+#api
 
-@app.get("/api/posts", response_model=list[CharacterResponse])
-def get_posts(db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Charaters))
-    posts = result.scalars().all()
-    return posts
+#get all characters
+@app.get("/api/characters", response_model=list[CharacterResponse])
+def get_characters(db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Character))
+    characters = result.scalars().all()
+    return characters
 
 
+#get specific character
+@app.get("/api/characters/{character_id}", response_model=CharacterResponse)
+def get_character(character_id: int, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Character).where(models.Character.id == character_id))
+    character = result.scalars().first()
+    if character:
+        return character
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
 
-@app.get("/api/posts/{post_id}", response_model=CharacterResponse)
-def get_post(character_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Charaters).where(models.Charaters.id == character_id))
-    post = result.scalars().first()
-    if post:
-        return post
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-
-@app.post("/api/posts", response_model = CharacterResponse, status_code = status.HTTP_201_CREATED)
+#create character
+@app.post("/api/characters", response_model = CharacterResponse, status_code = status.HTTP_201_CREATED)
 def create_charater(character: CharacterCreate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Charaters).where(models.Charaters.name == character.name))
+    result = db.execute(select(models.Character).where(models.Character.name == character.name))
     existing_character = result.scalars().first()
     if existing_character:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="chacter already exist",
         )
-    new_character = models.Charaters(
+    new_character = models.Character(
         name=character.name
     )
     db.add(new_character)
     db.commit()
     db.refresh(new_character)
     return new_character
+
+#get all buttons
+@app.get("/api/buttons", response_model=list[ButtonResponse])
+def get_buttons(db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Button))
+    buttons = result.scalars().all()
+    return buttons
+
+
+#get specific button
+@app.get("/api/buttons/{button_id}", response_model=ButtonResponse)
+def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+    button = result.scalars().first()
+    if button:
+        return button
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
+
+#create button
+@app.post("/api/buttons", response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
+def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Button).where(models.Button.id == button.character_id))
+    existing_button = result.scalars().first()
+    if existing_button:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="button already exist",
+        )
+    new_button = models.Button(
+        character_id = button.character_id,
+        name=button.name,
+        damage = button.damage,
+        guard = button.guard,
+        startup = button.startup,
+        active = button.active,
+        recovery = button.recovery,
+        onblock = button.onblock
+    )
+    db.add(new_button)
+    db.commit()
+    db.refresh(new_button)
+    return new_button
 
 
 #error handling

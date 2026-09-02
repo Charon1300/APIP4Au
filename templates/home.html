@@ -1,4 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}       
     <p>Test</p>
+    {% for character in characters %}
+        <p>{{ character.name }}</p>
+    {% endfor %}
 {% endblock content %}

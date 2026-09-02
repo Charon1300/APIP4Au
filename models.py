@@ -8,14 +8,14 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from database import Base
 
 
-class Charaters(Base):
-    __tablename__ = "Charaters"
+class Character(Base):
+    __tablename__ = "characters"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     image_file: Mapped[str | None] = mapped_column(String(200), nullable=True, default=None)
 
-    buttons: Mapped[list[Buttons]] = relationship(back_populates="character")
+    buttons: Mapped[list[Button]] = relationship(back_populates="character")
 
     @property
     def image_path(self) -> str:
@@ -24,7 +24,7 @@ class Charaters(Base):
         return "/static/profile_pics/default.jpg"
 
 
-class Buttons(Base):
+class Button(Base):
     __tablename__ = "Buttons"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
@@ -36,6 +36,6 @@ class Buttons(Base):
     recovery: Mapped[int] = mapped_column(Integer, nullable = False)
     onblock: Mapped[int] = mapped_column(Integer, nullable = True)
 
-    character_id: Mapped[int] = mapped_column(ForeignKey("Charaters.id"), nullable=False, index=True )
+    character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=False, index=True )
 
-    character: Mapped[Charaters] = relationship(back_populates="buttons")
+    character: Mapped[Character] = relationship(back_populates="buttons")
