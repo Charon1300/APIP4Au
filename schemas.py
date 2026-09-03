@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class CharaterBase(BaseModel):
     name: str = Field(min_length = 1, max_length = 10)
+    image_file: str | None = Field(default=None, min_length=1, max_length=200)
     
     
 class CharacterCreate(CharaterBase):
@@ -11,7 +12,7 @@ class CharacterResponse(CharaterBase):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    image_file: str | None
+    
     image_path: str
 
 class ButtonBase(BaseModel):
@@ -34,3 +35,5 @@ class ButtonResponse(ButtonBase):
 
     id: int
     character_id: int
+    image_file: str | None
+    image_path: str
