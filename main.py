@@ -78,7 +78,8 @@ def create_charater(character: CharacterCreate, db: Annotated[Session, Depends(g
             detail="chacter already exist",
         )
     new_character = models.Character(
-        name=character.name
+        name = character.name,
+        image_file = character.image_file
     )
     db.add(new_character)
     db.commit()
@@ -113,14 +114,15 @@ def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)])
             detail="button already exist",
         )
     new_button = models.Button(
-        character_id = button.character_id,
-        name=button.name,
+        name = button.name,
+        image_file = button.image_file,
         damage = button.damage,
         guard = button.guard,
         startup = button.startup,
         active = button.active,
         recovery = button.recovery,
-        onblock = button.onblock
+        onblock = button.onblock,
+        character_id = button.character_id,
     )
     db.add(new_button)
     db.commit()

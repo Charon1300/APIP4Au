@@ -13,10 +13,12 @@ class CharacterResponse(CharaterBase):
 
     id: int
     
+    image_file: str | None 
     image_path: str
 
 class ButtonBase(BaseModel):
     name: str = Field(min_length=1, max_length=30)
+    image_file: str | None = Field(default=None, min_length=1, max_length=200)
     damage: int | None
     guard: str = Field(min_length=1, max_length=10)
     startup: int | None

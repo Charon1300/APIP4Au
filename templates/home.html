@@ -3,5 +3,6 @@
     <p>Test</p>
     {% for character in characters %}
         <p>{{ character.name }}</p>
+        <img class = "CharacterIcon" src="{{character.image_path}}" alt = "Character image"/>
     {% endfor %}
 {% endblock content %}
