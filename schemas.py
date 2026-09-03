@@ -19,12 +19,12 @@ class CharacterResponse(CharaterBase):
 class ButtonBase(BaseModel):
     name: str = Field(min_length=1, max_length=30)
     image_file: str | None = Field(default=None, min_length=1, max_length=200)
-    damage: int | None
-    guard: str = Field(min_length=1, max_length=10)
-    startup: int | None
-    active: int | None
-    recovery: int | None
-    onblock: int | None
+    damage: int | None = Field(default=0)
+    guard: str | None = Field(default="nothing", max_length=10)
+    startup: int | None = Field(default=0)
+    active: int | None  = Field(default=0)
+    recovery: int 
+    onblock: int | None  = Field(default=0)
 
 
 

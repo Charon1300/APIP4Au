@@ -106,9 +106,9 @@ def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
 #create button
 @app.post("/api/buttons", response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
 def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Button).where(models.Button.id == button.character_id))
+    result = db.execute(select(models.Button).where(models.Button.image_file == button.image_file))
     existing_button = result.scalars().first()
-    if existing_button:
+    if existing_button: 
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="button already exist",

@@ -29,12 +29,12 @@ class Button(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(30), nullable=False)
-    damage: Mapped[int] = mapped_column(Integer, nullable=True)
-    guard: Mapped[str] = mapped_column(String(10), nullable=True)
-    startup: Mapped[int] = mapped_column(Integer, nullable = True)
-    active: Mapped[int] = mapped_column(Integer, nullable = True)
+    damage: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    guard: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    startup: Mapped[int | None] = mapped_column(Integer, nullable = True)
+    active: Mapped[int | None] = mapped_column(Integer, nullable = True)
     recovery: Mapped[int] = mapped_column(Integer, nullable = False)
-    onblock: Mapped[int] = mapped_column(Integer, nullable = True)
+    onblock: Mapped[int | None] = mapped_column(Integer, nullable = True)
     image_file: Mapped[str | None] = mapped_column(String(200), nullable=True, default=None)
 
     character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=False, index=True )
