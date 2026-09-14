@@ -50,6 +50,7 @@ def post_page(request: Request, character_id: int, db: Annotated[Session, Depend
         return templates.TemplateResponse(request, "post.html", {"character": character, "name": name})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
+#get random button
 @app.get("/ABAD", include_in_schema=False, name="random")
 def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
     button_id = random.randrange(1, 4)
@@ -148,7 +149,7 @@ def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
 
 
-
+#get random button
 @app.get("/api/button/random", response_model=ButtonResponse)
 def get_random_button(db: Annotated[Session, Depends(get_db)]):
     button_id = random.randrange(1, 4)
