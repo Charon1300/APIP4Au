@@ -18,6 +18,8 @@ import models
 #schemas
 from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResponse
 
+import random
+
 Base.metadata.create_all(bind = engine)
 
 
@@ -47,6 +49,46 @@ def post_page(request: Request, character_id: int, db: Annotated[Session, Depend
         
         return templates.TemplateResponse(request, "post.html", {"character": character, "name": name})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+@app.get("/ABAD", include_in_schema=False, name="random")
+def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
+    button_id = random.randrange(1, 4)
+    prev_id = None
+    
+    f = open("previousNum", "r")
+    prev_id = int(f.read())
+    f.close()
+    
+    
+    if button_id == prev_id:
+        val = list(range(1, 4))
+        val.remove(prev_id)
+    
+        button_id = random.choice(val)
+    
+    f = open("previousNum", "w")
+    f.write(str(button_id))
+    f.close()
+        
+    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+    button = result.scalars().first()
+    if button:
+
+        id = button.id
+        name = button.name[:30]
+        damage = button.damage
+        guard = button.guard[:10]
+        startup = button.startup
+        active = button.active
+        recovery = button.recovery
+        onblock = button.onblock
+        image_file = button.image_file[:200]
+        character_id = button.character_id
+
+        return templates.TemplateResponse(request, "buttonRand.html", {"button": button, "id": id, "name": name, "damage": damage ,"guard": guard, "startup": startup, "active": active, "recovery": recovery, "onblock": onblock, "image_file": image_file, "character_id": character_id})
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+
+
             
 #api
 
@@ -56,6 +98,7 @@ def get_characters(db: Annotated[Session, Depends(get_db)]):
     result = db.execute(select(models.Character))
     characters = result.scalars().all()
     return characters
+
 
 
 #get specific character
@@ -94,6 +137,7 @@ def get_buttons(db: Annotated[Session, Depends(get_db)]):
     return buttons
 
 
+
 #get specific button
 @app.get("/api/buttons/{button_id}", response_model=ButtonResponse)
 def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
@@ -102,6 +146,37 @@ def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
     if button:
         return button
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
+
+
+
+@app.get("/api/button/random", response_model=ButtonResponse)
+def get_random_button(db: Annotated[Session, Depends(get_db)]):
+    button_id = random.randrange(1, 4)
+    prev_id = None
+
+    f = open("previousNum", "r")
+    prev_id = int(f.read())
+    f.close()
+
+
+    if button_id == prev_id:
+        val = list(range(1, 4))
+        val.remove(prev_id)
+
+        button_id = random.choice(val)
+
+    f = open("previousNum", "w")
+    f.write(str(button_id))
+    f.close()
+    
+    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+    button = result.scalars().first()
+    if button:
+        return button
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
+    
+
+
 
 #create button
 @app.post("/api/buttons", response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
