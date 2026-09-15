@@ -13,6 +13,8 @@ from database import Base, engine, get_db
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from contextlib import asynccontextmanager
+
 import models
 
 #schemas
@@ -23,7 +25,35 @@ import random
 Base.metadata.create_all(bind = engine)
 
 
-app = FastAPI()
+#get random button
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    button_id = random.randrange(1, 4)
+    prev_id = None
+
+    f = open("previousNum", "r")
+    prev_id = int(f.read())
+    f.close()
+
+
+    if button_id == prev_id:
+        val = list(range(1, 4))
+        val.remove(prev_id)
+
+        button_id = random.choice(val)
+
+    
+
+    f = open("currentNum", "w")
+    f.write(str(button_id))
+    f.close()
+    yield
+    f = open("previousNum", "w")
+    f.write(str(button_id))
+    f.close()
+
+app = FastAPI(lifespan=lifespan)
 
 
 app.mount("/static", StaticFiles(directory = "static"), name = "static")
@@ -53,25 +83,13 @@ def post_page(request: Request, character_id: int, db: Annotated[Session, Depend
 #get random button
 @app.get("/ABAD", include_in_schema=False, name="random")
 def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
-    button_id = random.randrange(1, 4)
-    prev_id = None
-    
-    f = open("previousNum", "r")
-    prev_id = int(f.read())
-    f.close()
     
     
-    if button_id == prev_id:
-        val = list(range(1, 4))
-        val.remove(prev_id)
-    
-        button_id = random.choice(val)
-    
-    f = open("previousNum", "w")
-    f.write(str(button_id))
+    f = open("currentNum", "r")
+    id = int(f.read())
     f.close()
         
-    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+    result = db.execute(select(models.Button).where(models.Button.id == id))
     button = result.scalars().first()
     if button:
 
@@ -149,33 +167,7 @@ def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
 
 
-#get random button
-@app.get("/api/button/random", response_model=ButtonResponse)
-def get_random_button(db: Annotated[Session, Depends(get_db)]):
-    button_id = random.randrange(1, 4)
-    prev_id = None
 
-    f = open("previousNum", "r")
-    prev_id = int(f.read())
-    f.close()
-
-
-    if button_id == prev_id:
-        val = list(range(1, 4))
-        val.remove(prev_id)
-
-        button_id = random.choice(val)
-
-    f = open("previousNum", "w")
-    f.write(str(button_id))
-    f.close()
-    
-    result = db.execute(select(models.Button).where(models.Button.id == button_id))
-    button = result.scalars().first()
-    if button:
-        return button
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
-    
 
 
 
@@ -251,3 +243,6 @@ def validation_exception_handler(request: Request, exception: RequestValidationE
         },
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
     )
+
+if __name__ == "__main__":
+    print("Hello")
