@@ -1,5 +1,5 @@
 py -m venv .venv
 source .venv/Scripts/activate
-psql -U postgres -d blog -h fastapidb.c7y44k68g5dm.us-east-2.rds.amazonaws.com
+
 
  
