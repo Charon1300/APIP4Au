@@ -1,0 +1,14 @@
+#bg-image {
+
+    width: 90%;
+    min-height: 95vh;
+    /*min-height: 100dvh;*/
+    background-image: url(/media/background/bg.png);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    
+
+    filter: opacity(55%);
+}
+

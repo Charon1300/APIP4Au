@@ -1,8 +1,10 @@
 {% extends "layout.html" %}
 {% block content %}
-    <div>
-        <h2 class="article-title">{{ button.id }}</h2>
-        <h2 class="article-title">{{ button.name }}</h2>
-        <h2 class="article-title">{{ button.damage }}</h2>
-    </div>
+    <section class="text">
+        <div>
+            <h1 class="article-title">{{ button.name }}</h1>
+            <h2 class="article-title">{{ button.damage }}</h2>
+        </div>
+    </section>
+    
 {% endblock content %}

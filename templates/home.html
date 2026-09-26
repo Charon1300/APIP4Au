@@ -3,6 +3,11 @@
     <p>Test</p>
     {% for character in characters %}
         <p>{{ character.name }}</p>
+        {% for button in character.buttons %}
+            {% if button.character_id == character.id %}
+                <p>{{ button.name }}</p>
+            {% endif %}
+        {% endfor %}
         <img class = "CharacterIcon" src="{{character.image_path}}" alt = "Character image"/>
     {% endfor %}
 {% endblock content %}
