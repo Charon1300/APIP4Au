@@ -1,14 +1,19 @@
-#bg-image {
+body {
 
-    width: 90%;
+    width: 95%;
     min-height: 95vh;
     /*min-height: 100dvh;*/
     background-image: url(/media/background/bg.png);
     background-size: cover;
     background-repeat: no-repeat;
-    background-attachment: fixed;
+    background-attachment: scroll;
     
 
-    filter: opacity(55%);
+   
 }
 
+.text {
+    background-color: blueviolet;
+    padding-top: 50px;
+    padding-bottom: 30px;
+}
