@@ -25,6 +25,8 @@ class ButtonBase(BaseModel):
     active: int | None  = Field(default=0)
     recovery: int 
     onblock: int | None  = Field(default=0)
+    attribute: str | None = Field(default="nothing", max_length=30)
+    invuln: str | None = Field(default="nothing", max_length=50)
 
 
 

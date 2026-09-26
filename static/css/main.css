@@ -3,7 +3,7 @@ body {
     width: 95%;
     min-height: 95vh;
     /*min-height: 100dvh;*/
-    background-image: url(/media/background/bg.png);
+    background-image: url(/media/background/P4AU_backgroundblur.png);
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: scroll;
@@ -16,4 +16,38 @@ body {
     background-color: blueviolet;
     padding-top: 50px;
     padding-bottom: 30px;
+    padding-left: 50px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.Container{
+    display: flex;
+    justify-content: center;
+}
+
+
+.Character {
+
+    
+
+}
+
+.ChName{
+    text-align: center;
+    margin-bottom: 10%;
+}
+
+.ChPortrait{
+    min-width: 150px;
+    max-width: 200px;
+    min-height: 250px;
+    max-height: 355px;
+}
+
+#bg-image{
+    background-color: rgb(152, 184, 11);
+    margin-left: 25%;
+    margin-right: 25%;
+    
 }

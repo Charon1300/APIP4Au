@@ -35,6 +35,9 @@ class Button(Base):
     active: Mapped[int | None] = mapped_column(Integer, nullable = True)
     recovery: Mapped[int] = mapped_column(Integer, nullable = False)
     onblock: Mapped[int | None] = mapped_column(Integer, nullable = True)
+    attribute: Mapped[str | None] = mapped_column(String(30), nullable=True)
+    invuln: Mapped[str | None] = mapped_column(String(50), nullable=True)
+
     image_file: Mapped[str | None] = mapped_column(String(200), nullable=True, default=None)
 
     character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=False, index=True )

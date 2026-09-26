@@ -61,6 +61,33 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory = "templates")
 
+characterList = {
+    1: "Margaret",
+    2: "Sho",
+    3: "Naoto",
+    4: "Teddie",
+    5: "Yukiiko",
+    6: "Yu",
+    7: "Yosuke",
+    8: "Chie",
+    9: "Kanji",
+    10: "Minazuki",
+    11: "Marie",
+    12: "Ken and Koromaru",
+    13: "Yukari",
+    14: "Labrys",
+    15: "Mitsuru",
+    16: "Aigis",
+    17: "Adachi",
+    18: "Elizabeth",
+    19: "Akihiko",
+    20: "Shadow Labrys",
+    21: "Junpei",
+    22: "Rise"
+    }
+
+
+
 #frontend
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/characters", include_in_schema=False, name="characters")
@@ -101,10 +128,13 @@ def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
         active = button.active
         recovery = button.recovery
         onblock = button.onblock
+        attribute = button.attribute[:30]
+        invuln = button.invuln[:50]
         image_file = button.image_file[:200]
         character_id = button.character_id
 
-        return templates.TemplateResponse(request, "buttonRand.html", {"button": button, "id": id, "name": name, "damage": damage ,"guard": guard, "startup": startup, "active": active, "recovery": recovery, "onblock": onblock, "image_file": image_file, "character_id": character_id})
+
+        return templates.TemplateResponse(request, "buttonRand.html", {"button": button, "id": id, "name": name, "damage": damage ,"guard": guard, "startup": startup, "active": active, "recovery": recovery, "onblock": onblock, "attribute": attribute, "invuln": invuln, "image_file": image_file, "character_id": character_id, "characterList": characterList})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 
@@ -190,6 +220,9 @@ def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)])
         active = button.active,
         recovery = button.recovery,
         onblock = button.onblock,
+        attribute = button.attribute,
+        invuln = button.invuln,
+
         character_id = button.character_id,
     )
     db.add(new_button)

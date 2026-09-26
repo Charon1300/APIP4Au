@@ -1,10 +1,27 @@
 {% extends "layout.html" %}
 {% block content %}
-    <section class="text">
-        <div>
-            <h1 class="article-title">{{ button.name }}</h1>
-            <h2 class="article-title">{{ button.damage }}</h2>
+    <div class="Container">
+        <div class="Character">
+            {% for i in characterList %}
+                {% if i == button.character_id %}
+                    <h1 class="ChName">{{ characterList[i] }}</h1>
+                    <img class = "ChPortrait" src = media/profile_pics/P4AU_{{characterList[i]}}_Portrait.png alt = "Portrait of character">
+                {% endif %}
+            {% endfor %}
+            <!--- <h1 class="article-title">{{ button.name }}</h1> -->
+            <!---<h2 class="article-title">{{ button.damage }}</h2>-->
         </div>
-    </section>
+    </div>
+
+    
     
 {% endblock content %}
+
+{% block ButtonInfo  %}
+
+    <div class = "button">
+        <h1 class="buttonName">{{ button.attribute }}</h1>
+
+    </div>
+
+{% endblock ButtonInfo  %}
