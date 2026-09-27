@@ -40,14 +40,46 @@ body {
 
 .ChPortrait{
     min-width: 150px;
-    max-width: 200px;
+    max-width: 175px;
     min-height: 250px;
-    max-height: 355px;
+    max-height: 300px;
+}
+
+.ButtonImg{
+    max-width: 350px;
+    max-height: 200px;
+    
+   
 }
 
 #bg-image{
     background-color: rgb(152, 184, 11);
-    margin-left: 25%;
-    margin-right: 25%;
+    margin-left: 40%;
+    margin-right: 40%;
+    border-radius: 15%;
+   
     
 }
+
+table, th, td{
+    border: 1px solid;
+}
+
+th, td {
+    /*padding-left: 50px;*/
+}
+
+th{
+    background-color: rgb(152, 184, 11);
+}
+
+td{
+    background-color: rgb(168, 203, 12);
+    text-align: center;
+
+}
+
+
+
+
+

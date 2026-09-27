@@ -19,9 +19,33 @@
 
 {% block ButtonInfo  %}
 
-    <div class = "button">
-        <h1 class="buttonName">{{ button.attribute }}</h1>
-
-    </div>
+   <table>
+    <tr>
+        <th>Name:</th>
+        <th>image:</th>
+        <th>damage:</th>
+        <th>guard:</th>
+        <th>startup:</th>
+        <th>active:</th>
+        <th>recovery:</th>
+        <th>onblock:</th>
+        <th>attr:</th>
+        <th>invuln:</th>
+    </tr>
+    <tr>
+        <td><h1 class="buttonName">{{ button.name }}</h1></td>
+        <td><img class = "ButtonImg" src = {{button.image_path}}.png alt = "Image of button"></td>
+        <td><p>{{button.damage}}</p></td>
+        <td><p>{{button.guard}}</p></td>
+        <td><p>{{button.startup}}</p></td>
+        <td><p>{{button.active}}</p></td>
+        <td><p>{{button.recovery}}</p></td>
+        <td><p>{{button.onblock}}</p></td>
+        <td><p>{{button.attribute}}</p></td>
+        <td><p>{{button.invuln}}</p></td>
+    </tr>
+   </table>
+    
+    
 
 {% endblock ButtonInfo  %}
