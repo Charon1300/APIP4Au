@@ -18,7 +18,7 @@ from contextlib import asynccontextmanager
 import models
 
 #schemas
-from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResponse
+from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResponse, ButtonUpdate
 
 import random
 
@@ -108,7 +108,7 @@ def post_page(request: Request, character_id: int, db: Annotated[Session, Depend
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
 
 #get random button
-@app.get("/ABAD", include_in_schema=False, name="random")
+@app.get("/P4UBD", include_in_schema=False, name="random")
 def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
     
     
@@ -126,7 +126,7 @@ def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
         guard = button.guard[:10]
         startup = button.startup
         active = button.active
-        recovery = button.recovery
+        recovery = button.recovery[:30]
         onblock = button.onblock
         attribute = button.attribute[:30]
         invuln = button.invuln[:50]
@@ -178,6 +178,8 @@ def create_charater(character: CharacterCreate, db: Annotated[Session, Depends(g
     db.refresh(new_character)
     return new_character
 
+
+
 #get all buttons
 @app.get("/api/buttons", response_model=list[ButtonResponse])
 def get_buttons(db: Annotated[Session, Depends(get_db)]):
@@ -196,7 +198,21 @@ def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
         return button
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
 
+#edit button
+@app.patch("/api/buttons/{button_id}", response_model=ButtonResponse)
+def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[Session, Depends(get_db)]):
+    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+    button = result.scalars().first()
+    if not button:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
 
+    updata_data = button_data.model_dump(exclude_unset=True)
+    for field, value in updata_data.items():
+        setattr(button, field, value)
+    
+    db.commit()
+    db.refresh(button)
+    return button
 
 
 
