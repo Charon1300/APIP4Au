@@ -20,12 +20,12 @@ class CharacterResponse(CharaterBase):
 class ButtonBase(BaseModel):
     name: str = Field(min_length=1, max_length=30)
     image_file: str | None = Field(default=None, min_length=1, max_length=200)
-    damage: str = Field(default="0", min_length=1, max_length=50)
-    guard: str | None = Field(default="nothing", max_length=10)
+    damage: str = Field(default="0", min_length=1, max_length=30)
+    guard: str | None = Field(default="nothing", max_length=30)
     startup: int | None = Field(default=0)
-    active: str = Field(default="0", min_length=1, max_length=50)
+    active: str = Field(default="0", min_length=1, max_length=30)
     recovery: str = Field(default="0", min_length=1, max_length=30)
-    onblock: int | None  = Field(default=0)
+    onblock: str | None = Field(default="0", max_length=30)
     attribute: str | None = Field(default="nothing", max_length=30)
     invuln: str | None = Field(default="nothing", max_length=50)
 
@@ -37,14 +37,15 @@ class ButtonCreate(ButtonBase):
 class ButtonUpdate(BaseModel):
     name: str = Field(min_length=1, max_length=30)
     image_file: str | None = Field(default=None, min_length=1, max_length=200)
-    damage: int | None = Field(default=0)
-    guard: str | None = Field(default="nothing", max_length=10)
+    damage: str = Field(default="0", min_length=1, max_length=30)
+    guard: str | None = Field(default="nothing", max_length=30)
     startup: int | None = Field(default=0)
-    active: int | None  = Field(default=0)
+    active: str = Field(default="0", min_length=1, max_length=30)
     recovery: str = Field(default="0", min_length=1, max_length=30)
-    onblock: int | None  = Field(default=0)
+    onblock: str | None = Field(default="0", max_length=30)
     attribute: str | None = Field(default="nothing", max_length=30)
     invuln: str | None = Field(default="nothing", max_length=50)
+    character_id: int
 
 
 class ButtonResponse(ButtonBase):

@@ -49,14 +49,14 @@ body {
 }
 
 .ButtonImg{
-    max-width: 350px;
+    max-width: 250px;
     max-height: 200px;
     
    
 }
 
 .buttonName{
-    font-size:xx-large;
+    font-size:23px;
 }
 
 #bg-image{

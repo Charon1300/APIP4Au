@@ -29,7 +29,7 @@ Base.metadata.create_all(bind = engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    button_id = random.randrange(1, 4)
+    button_id = random.randrange(20, 22)
     prev_id = None
 
     f = open("previousNum", "r")
@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI):
 
 
     if button_id == prev_id:
-        val = list(range(1, 4))
+        val = list(range(20, 22))
         val.remove(prev_id)
 
         button_id = random.choice(val)
@@ -122,12 +122,12 @@ def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
 
         id = button.id
         name = button.name[:30]
-        damage = button.damage
-        guard = button.guard[:10]
+        damage = button.damage[:30]
+        guard = button.guard[:30]
         startup = button.startup
-        active = button.active
+        active = button.active[:30]
         recovery = button.recovery[:30]
-        onblock = button.onblock
+        onblock = button.onblock[:30]
         attribute = button.attribute[:30]
         invuln = button.invuln[:50]
         image_file = button.image_file[:200]
@@ -224,7 +224,7 @@ def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)])
     existing_button = result.scalars().first()
     if existing_button: 
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="button already exist",
         )
     new_button = models.Button(

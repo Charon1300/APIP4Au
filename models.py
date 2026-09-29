@@ -30,11 +30,11 @@ class Button(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(30), nullable=False)
     damage: Mapped[str | None] = mapped_column(String(30), nullable=True)
-    guard: Mapped[str | None] = mapped_column(String(10), nullable=True)
+    guard: Mapped[str | None] = mapped_column(String(30), nullable=True)
     startup: Mapped[int | None] = mapped_column(Integer, nullable = True)
     active: Mapped[str | None] = mapped_column(String(30), nullable = True)
     recovery: Mapped[str] = mapped_column(String(30), nullable = False)
-    onblock: Mapped[int | None] = mapped_column(Integer, nullable = True)
+    onblock: Mapped[str | None] = mapped_column(String(30), nullable = True)
     attribute: Mapped[str | None] = mapped_column(String(30), nullable=True)
     invuln: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
