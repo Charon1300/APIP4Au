@@ -6,12 +6,17 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
+
 from starlette.exceptions import HTTPException as StarletteHTTPException
 #database
 from database import Base, engine, get_db
 
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
+from sqlalchemy.ext.asyncio import AsyncSession
+
+
 
 from contextlib import asynccontextmanager
 
@@ -22,13 +27,13 @@ from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResp
 
 import random
 
-Base.metadata.create_all(bind = engine)
-
 
 #get random button
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     button_id = random.randrange(20, 22)
     prev_id = None
 
@@ -52,6 +57,7 @@ async def lifespan(app: FastAPI):
     f = open("previousNum", "w")
     f.write(str(button_id))
     f.close()
+    await engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
 
@@ -91,15 +97,15 @@ characterList = {
 #frontend
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/characters", include_in_schema=False, name="characters")
-def home(request: Request, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Character))
+async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Character))
     characters = result.scalars().all()
     #can include vars to templates with {"posts": posts}
     return templates.TemplateResponse(request,"home.html", {"characters": characters, "title": "Home"})
 
 @app.get("/characters/{character_id}", include_in_schema = False)
-def post_page(request: Request, character_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Character).where(models.Character.id == character_id))
+async def post_page(request: Request, character_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Character).where(models.Character.id == character_id))
     character = result.scalars().first()
     if character:
         name = character.name[:50]
@@ -109,14 +115,14 @@ def post_page(request: Request, character_id: int, db: Annotated[Session, Depend
 
 #get random button
 @app.get("/P4UBD", include_in_schema=False, name="random")
-def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
+async def random_button(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
     
     
     f = open("currentNum", "r")
     id = int(f.read())
     f.close()
         
-    result = db.execute(select(models.Button).where(models.Button.id == id))
+    result = await db.execute(select(models.Button).where(models.Button.id == id))
     button = result.scalars().first()
     if button:
 
@@ -143,8 +149,8 @@ def random_button(request: Request, db: Annotated[Session, Depends(get_db)]):
 
 #get all characters
 @app.get("/api/characters", response_model=list[CharacterResponse])
-def get_characters(db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Character))
+async def get_characters(db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Character))
     characters = result.scalars().all()
     return characters
 
@@ -152,8 +158,8 @@ def get_characters(db: Annotated[Session, Depends(get_db)]):
 
 #get specific character
 @app.get("/api/characters/{character_id}", response_model=CharacterResponse)
-def get_character(character_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Character).where(models.Character.id == character_id))
+async def get_character(character_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Character).where(models.Character.id == character_id))
     character = result.scalars().first()
     if character:
         return character
@@ -161,8 +167,8 @@ def get_character(character_id: int, db: Annotated[Session, Depends(get_db)]):
 
 #create character
 @app.post("/api/characters", response_model = CharacterResponse, status_code = status.HTTP_201_CREATED)
-def create_charater(character: CharacterCreate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Character).where(models.Character.name == character.name))
+async def create_charater(character: CharacterCreate, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Character).where(models.Character.name == character.name))
     existing_character = result.scalars().first()
     if existing_character:
         raise HTTPException(
@@ -174,16 +180,16 @@ def create_charater(character: CharacterCreate, db: Annotated[Session, Depends(g
         image_file = character.image_file
     )
     db.add(new_character)
-    db.commit()
-    db.refresh(new_character)
+    await db.commit()
+    await db.refresh(new_character)
     return new_character
 
 
 
 #get all buttons
 @app.get("/api/buttons", response_model=list[ButtonResponse])
-def get_buttons(db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Button))
+async def get_buttons(db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Button))
     buttons = result.scalars().all()
     return buttons
 
@@ -191,8 +197,8 @@ def get_buttons(db: Annotated[Session, Depends(get_db)]):
 
 #get specific button
 @app.get("/api/buttons/{button_id}", response_model=ButtonResponse)
-def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+async def get_button(button_id: int, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Button).where(models.Button.id == button_id))
     button = result.scalars().first()
     if button:
         return button
@@ -200,8 +206,8 @@ def get_button(button_id: int, db: Annotated[Session, Depends(get_db)]):
 
 #edit button
 @app.patch("/api/buttons/{button_id}", response_model=ButtonResponse)
-def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Button).where(models.Button.id == button_id))
+async def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Button).where(models.Button.id == button_id))
     button = result.scalars().first()
     if not button:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
@@ -210,8 +216,8 @@ def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[Session
     for field, value in updata_data.items():
         setattr(button, field, value)
     
-    db.commit()
-    db.refresh(button)
+    await db.commit()
+    await db.refresh(button)
     return button
 
 
@@ -219,8 +225,8 @@ def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[Session
 
 #create button
 @app.post("/api/buttons", response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
-def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)]):
-    result = db.execute(select(models.Button).where(models.Button.image_file == button.image_file))
+async def create_button(button: ButtonCreate, db: Annotated[AsyncSession, Depends(get_db)]):
+    result = await db.execute(select(models.Button).where(models.Button.image_file == button.image_file))
     existing_button = result.scalars().first()
     if existing_button: 
         raise HTTPException(
@@ -242,26 +248,26 @@ def create_button(button: ButtonCreate, db: Annotated[Session, Depends(get_db)])
         character_id = button.character_id,
     )
     db.add(new_button)
-    db.commit()
-    db.refresh(new_button)
+    await db.commit()
+    await db.refresh(new_button)
     return new_button
 
 
 #error handling
 @app.exception_handler(StarletteHTTPException)
-def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
-    message = (
-        exception.detail
-        if exception.detail
-        else "An error occurred. Please check your request and try again."
-    )
+async def general_http_exception_handler(request: Request, exception: StarletteHTTPException):
+    
 
     if request.url.path.startswith("/api"):
-        return JSONResponse(
-            status_code=exception.status_code,
-            content={"detail": message},
-        )
+        return await http_exception_handler(request, exception)
 
+
+    message = (
+            exception.detail
+            if exception.detail
+            else "An error occurred. Please check your request and try again."
+        )
+    
     return templates.TemplateResponse(
         request,
         "error.html",
@@ -275,12 +281,9 @@ def general_http_exception_handler(request: Request, exception: StarletteHTTPExc
 
 
 @app.exception_handler(RequestValidationError)
-def validation_exception_handler(request: Request, exception: RequestValidationError):
+async def validation_exception_handler(request: Request, exception: RequestValidationError):
     if request.url.path.startswith("/api"):
-        return JSONResponse(
-            status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-            content={"detail": exception.errors()},
-        )
+        return await request_validation_exception_handler(request, exception)
 
     return templates.TemplateResponse(
         request,
