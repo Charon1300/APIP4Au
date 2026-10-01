@@ -37,7 +37,7 @@ class Button(Base):
     onblock: Mapped[str | None] = mapped_column(String(30), nullable = True)
     attribute: Mapped[str | None] = mapped_column(String(30), nullable=True)
     invuln: Mapped[str | None] = mapped_column(String(50), nullable=True)
-
+    
     image_file: Mapped[str | None] = mapped_column(String(200), nullable=True, default=None)
 
     character_id: Mapped[int] = mapped_column(ForeignKey("characters.id"), nullable=False, index=True )

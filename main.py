@@ -22,6 +22,7 @@ from contextlib import asynccontextmanager
 
 import models
 
+
 #schemas
 from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResponse, ButtonUpdate
 
@@ -32,7 +33,7 @@ import random
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    button_id = random.randrange(20, 22)
+    button_id = random.randrange(1, 3)
     prev_id = None
 
     f = open("previousNum", "r")
@@ -41,7 +42,7 @@ async def lifespan(app: FastAPI):
 
 
     if button_id == prev_id:
-        val = list(range(20, 22))
+        val = list(range(1, 3))
         val.remove(prev_id)
 
         button_id = random.choice(val)
@@ -96,7 +97,7 @@ characterList = {
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/characters", include_in_schema=False, name="characters")
 async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
-    result = await db.execute(select(models.Character))
+    result = await db.execute(select(models.Character).options(selectinload(models.Character.buttons)))
     characters = result.scalars().all()
     #can include vars to templates with {"posts": posts}
     return templates.TemplateResponse(request,"home.html", {"characters": characters, "title": "Home"})
