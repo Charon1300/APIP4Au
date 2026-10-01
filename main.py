@@ -10,7 +10,7 @@ from fastapi.exception_handlers import http_exception_handler, request_validatio
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
 #database
-from database import Base, engine, get_db
+from database import engine, get_db
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
@@ -32,14 +32,12 @@ import random
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
     button_id = random.randrange(20, 22)
     prev_id = None
 
     f = open("previousNum", "r")
     prev_id = int(f.read())
-    f.close()
+    f.close() 
 
 
     if button_id == prev_id:
