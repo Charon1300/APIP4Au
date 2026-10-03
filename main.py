@@ -5,7 +5,6 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
-
 from fastapi.exception_handlers import http_exception_handler, request_validation_exception_handler
 
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -16,31 +15,28 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
-
 from contextlib import asynccontextmanager
 
 import models
-
 
 #schemas
 from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResponse, ButtonUpdate
 
 import random
 
-
 #get random button
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    #gets rand number from range, doesn't include stop
     button_id = random.randrange(1, 3)
     prev_id = None
 
+    #reads from prevNum to get yesterdays num
     f = open("previousNum", "r")
     prev_id = int(f.read())
     f.close() 
 
-
+    #if it is the same then get random from range not including prev_id
     if button_id == prev_id:
         val = list(range(1, 3))
         val.remove(prev_id)
@@ -48,11 +44,12 @@ async def lifespan(app: FastAPI):
         button_id = random.choice(val)
 
     
-
+    #records currNum
     f = open("currentNum", "w")
     f.write(str(button_id))
     f.close()
     yield
+    #on shut down records pervNum 
     f = open("previousNum", "w")
     f.write(str(button_id))
     f.close()
@@ -60,12 +57,14 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
-
+#static and media folders
 app.mount("/static", StaticFiles(directory = "static"), name = "static")
 app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory = "templates")
 
+#Character order for charcter id to buttons 
+#shows what buttons belong to which character
 characterList = {
     1: "Margaret",
     2: "Sho",
@@ -94,6 +93,8 @@ characterList = {
 
 
 #frontend
+#testing 
+"""
 @app.get("/", include_in_schema=False, name="home")
 @app.get("/characters", include_in_schema=False, name="characters")
 async def home(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
@@ -111,16 +112,17 @@ async def post_page(request: Request, character_id: int, db: Annotated[AsyncSess
         
         return templates.TemplateResponse(request, "post.html", {"character": character, "name": name})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
-
+"""
 #get random button
 @app.get("/P4UBD", include_in_schema=False, name="random")
 async def random_button(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
     
-    
+    #currNum has the number for the button id 
     f = open("currentNum", "r")
     id = int(f.read())
     f.close()
-        
+
+    #use said id to get button info
     result = await db.execute(select(models.Button).where(models.Button.id == id))
     button = result.scalars().first()
     if button:
@@ -138,9 +140,9 @@ async def random_button(request: Request, db: Annotated[AsyncSession, Depends(ge
         image_file = button.image_file[:200]
         character_id = button.character_id
 
-
+        #give info to buttonRand html page for template 
         return templates.TemplateResponse(request, "buttonRand.html", {"button": button, "id": id, "name": name, "damage": damage ,"guard": guard, "startup": startup, "active": active, "recovery": recovery, "onblock": onblock, "attribute": attribute, "invuln": invuln, "image_file": image_file, "character_id": character_id, "characterList": characterList})
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post not found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Button not found")
 
 
             
@@ -172,7 +174,7 @@ async def create_charater(character: CharacterCreate, db: Annotated[AsyncSession
     if existing_character:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="chacter already exist",
+            detail="Character already exist",
         )
     new_character = models.Character(
         name = character.name,
@@ -201,7 +203,7 @@ async def get_button(button_id: int, db: Annotated[AsyncSession, Depends(get_db)
     button = result.scalars().first()
     if button:
         return button
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Button not found")
 
 #edit button
 @app.patch("/api/buttons/{button_id}", response_model=ButtonResponse)
@@ -209,7 +211,7 @@ async def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[A
     result = await db.execute(select(models.Button).where(models.Button.id == button_id))
     button = result.scalars().first()
     if not button:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="button not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Button not found")
 
     updata_data = button_data.model_dump(exclude_unset=True)
     for field, value in updata_data.items():
@@ -219,9 +221,6 @@ async def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[A
     await db.refresh(button)
     return button
 
-
-
-
 #create button
 @app.post("/api/buttons", response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
 async def create_button(button: ButtonCreate, db: Annotated[AsyncSession, Depends(get_db)]):
@@ -230,7 +229,7 @@ async def create_button(button: ButtonCreate, db: Annotated[AsyncSession, Depend
     if existing_button: 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="button already exist",
+            detail="Button already exist",
         )
     new_button = models.Button(
         name = button.name,
