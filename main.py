@@ -63,7 +63,7 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory = "templates")
 
-#missing naoto 2[c], teddie 5bb,5bbb
+#missing naoto 2[c], teddie 5bb,5bbb, yukiko 4b
 #Character order for charcter id to buttons 
 #shows what buttons belong to which character
 characterList = {
