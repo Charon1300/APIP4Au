@@ -63,7 +63,7 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory = "templates")
 
-#missing naoto 2[c], teddie 5bb,5bbb, yukiko 4b, yosuke suku 5aaa, 5aaaa
+#missing naoto 2[c], teddie 5bb,5bbb, yukiko 4b, yosuke suku 5aaa, 5aaaa, mina 2b-1 5[d] j[d]
 #Character order for charcter id to buttons 
 #shows what buttons belong to which character
 characterList = {
@@ -132,7 +132,7 @@ async def random_button(request: Request, db: Annotated[AsyncSession, Depends(ge
         name = button.name[:30]
         damage = button.damage[:30]
         guard = button.guard[:30]
-        startup = button.startup
+        startup = button.startup[:30]
         active = button.active[:30]
         recovery = button.recovery[:30]
         onblock = button.onblock[:30]

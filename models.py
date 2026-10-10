@@ -38,7 +38,7 @@ class Button(Base):
     guard: Mapped[str | None] = mapped_column(String(30), nullable=True)
 
     #the frames where a button isn't active yet
-    startup: Mapped[int | None] = mapped_column(Integer, nullable = True)
+    startup: Mapped[str | None] = mapped_column(String(30), nullable=True)
 
     #the frames where the button is active and can deal damage or hit
     active: Mapped[str | None] = mapped_column(String(30), nullable = True)

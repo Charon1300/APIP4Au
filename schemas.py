@@ -26,7 +26,7 @@ class ButtonBase(BaseModel):
     guard: str | None = Field(default="nothing", max_length=30)
 
     #the frames where a button isn't active yet
-    startup: int | None = Field(default=0)
+    startup: str | None = Field(default="0", max_length=30)
 
     #the frames where the button is active and can deal damage or hit
     active: str = Field(default="0", min_length=1, max_length=30)
