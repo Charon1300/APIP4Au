@@ -63,7 +63,7 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 
 templates = Jinja2Templates(directory = "templates")
 
-#missing naoto 2[c], teddie 5bb,5bbb, yukiko 4b, yosuke suku 5aaa, 5aaaa, mina 2b-1 5[d] j[d], mitsuru 5dd jdd 2dd
+#missing naoto 2[c], teddie 5bb,5bbb, yukiko 4b, yosuke suku 5aaa, 5aaaa, mina 2b-1 5[d] j[d], mitsuru 5dd jdd 2dd, aigis no ammo 2b jd attack j.2d guard attack, adachi j.d
 #Character order for charcter id to buttons 
 #shows what buttons belong to which character
 characterList = {
