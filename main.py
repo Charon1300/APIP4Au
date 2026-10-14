@@ -168,7 +168,7 @@ async def get_character(character_id: int, db: Annotated[AsyncSession, Depends(g
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
 
 #create character
-@app.post("/api/characters", response_model = CharacterResponse, status_code = status.HTTP_201_CREATED)
+@app.post("/api/characters", include_in_schema=False, response_model = CharacterResponse, status_code = status.HTTP_201_CREATED)
 async def create_charater(character: CharacterCreate, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Character).where(models.Character.name == character.name))
     existing_character = result.scalars().first()
@@ -191,7 +191,7 @@ async def create_charater(character: CharacterCreate, db: Annotated[AsyncSession
 #get all buttons
 @app.get("/api/buttons", response_model=list[ButtonResponse])
 async def get_buttons(db: Annotated[AsyncSession, Depends(get_db)]):
-    result = await db.execute(select(models.Button))
+    result = await db.execute(select(models.Button).order_by(models.Button.id))
     buttons = result.scalars().all()
     return buttons
 
@@ -207,7 +207,7 @@ async def get_button(button_id: int, db: Annotated[AsyncSession, Depends(get_db)
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Button not found")
 
 #edit button
-@app.patch("/api/buttons/{button_id}", response_model=ButtonResponse)
+@app.patch("/api/buttons/{button_id}", include_in_schema=False, response_model=ButtonResponse)
 async def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Button).where(models.Button.id == button_id))
     button = result.scalars().first()
@@ -223,7 +223,7 @@ async def edit_button(button_id: int, button_data: ButtonUpdate, db: Annotated[A
     return button
 
 #create button
-@app.post("/api/buttons", response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
+@app.post("/api/buttons", include_in_schema=False, response_model = ButtonResponse, status_code = status.HTTP_201_CREATED)
 async def create_button(button: ButtonCreate, db: Annotated[AsyncSession, Depends(get_db)]):
     result = await db.execute(select(models.Button).where(models.Button.image_file == button.image_file))
     existing_button = result.scalars().first()
