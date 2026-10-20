@@ -5,3 +5,5 @@
 termial
 
 __pycache__
+
+alembic/__pycache__
