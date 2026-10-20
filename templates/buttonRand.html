@@ -2,18 +2,14 @@
 {% block content %}
     <div class="Container">
         <div class="Character">
-            {% for i in characterList %}
-                {% if i == button.character_id %}
-                    <h1 class="ChName">{{ characterList[i] }}</h1>
-                    {% if characterList[i] == "Ken & Koromaru" %}
-                    <img class = "ChPortrait" src = media/profile_pics/P4AU_Ken_Portrait.png alt = "Portrait of Ken and Koromaru">
-                    {% elif characterList[i] == "Shadow Labrys" %}
-                    <img class = "ChPortrait" src = media/profile_pics/P4AU_Shadow_Labrys_Portrait.png alt = "Portrait of Shadow Labrys">
-                    {% else %}
-                    <img class = "ChPortrait" src = media/profile_pics/P4AU_{{characterList[i]}}_Portrait.png alt = "Portrait of character">
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+            <h1 class="ChName">{{ ChName }}</h1>
+            {% if ChName == "Ken & Koromaru" %}
+            <img class = "ChPortrait" src = media/profile_pics/P4AU_Ken_Portrait.png alt = "Portrait of Ken and Koromaru">
+            {% elif ChName == "Shadow Labrys" %}
+            <img class = "ChPortrait" src = media/profile_pics/P4AU_Shadow_Labrys_Portrait.png alt = "Portrait of Shadow Labrys">
+            {% else %}
+            <img class = "ChPortrait" src = media/profile_pics/P4AU_{{ChName}}_Portrait.png alt = "Portrait of character">
+            {% endif %}
             <!--- <h1 class="article-title">{{ button.name }}</h1> -->
             <!---<h2 class="article-title">{{ button.damage }}</h2>-->
         </div>

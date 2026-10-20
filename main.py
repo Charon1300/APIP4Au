@@ -64,32 +64,6 @@ app.mount("/media", StaticFiles(directory="media"), name="media")
 templates = Jinja2Templates(directory = "templates")
 
 #missing naoto 2[c], teddie 5bb,5bbb, yukiko 4b, yosuke suku 5aaa, 5aaaa, mina 2b-1 5[d] j[d], mitsuru 5dd jdd 2dd, aigis no ammo 2b jd attack j.2d guard attack, adachi j.d, aki 5aaaaa 5aaaaaa
-#Character order for charcter id to buttons 
-#shows what buttons belong to which character
-characterList = {
-    1: "Margaret",
-    2: "Sho",
-    3: "Naoto",
-    4: "Teddie",
-    5: "Yukiiko",
-    6: "Yu",
-    7: "Yosuke",
-    8: "Chie",
-    9: "Kanji",
-    10: "Minazuki",
-    11: "Marie",
-    12: "Ken and Koromaru",
-    13: "Yukari",
-    14: "Labrys",
-    15: "Mitsuru",
-    16: "Aigis",
-    17: "Adachi",
-    18: "Elizabeth",
-    19: "Akihiko",
-    20: "Shadow Labrys",
-    21: "Junpei",
-    22: "Rise"
-    }
 
 
 
@@ -126,7 +100,12 @@ async def random_button(request: Request, db: Annotated[AsyncSession, Depends(ge
     #use said id to get button info
     result = await db.execute(select(models.Button).where(models.Button.id == id))
     button = result.scalars().first()
+    
+    resultName = await db.execute(select(models.Chlist.name).where(models.Chlist.id == button.character_id))
+    characterName = resultName.scalars().first()
+    
     if button:
+        
 
         id = button.id
         name = button.name[:30]
@@ -142,7 +121,7 @@ async def random_button(request: Request, db: Annotated[AsyncSession, Depends(ge
         character_id = button.character_id
 
         #give info to buttonRand html page for template 
-        return templates.TemplateResponse(request, "buttonRand.html", {"button": button, "id": id, "name": name, "damage": damage ,"guard": guard, "startup": startup, "active": active, "recovery": recovery, "onblock": onblock, "attribute": attribute, "invuln": invuln, "image_file": image_file, "character_id": character_id, "characterList": characterList})
+        return templates.TemplateResponse(request, "buttonRand.html", {"button": button, "id": id, "name": name, "damage": damage ,"guard": guard, "startup": startup, "active": active, "recovery": recovery, "onblock": onblock, "attribute": attribute, "invuln": invuln, "image_file": image_file, "character_id": character_id, "ChName": characterName})
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Button not found")
 
 
@@ -166,6 +145,8 @@ async def get_character(character_id: int, db: Annotated[AsyncSession, Depends(g
     if character:
         return character
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Character not found")
+
+
 
 #create character
 @app.post("/api/characters", include_in_schema=False, response_model = CharacterResponse, status_code = status.HTTP_201_CREATED)
