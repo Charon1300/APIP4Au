@@ -1,5 +1,0 @@
-py -m venv .venv
-source .venv/Scripts/activate
-
-source /var/www/APIP4Au/.venv/bin/activate
- 
