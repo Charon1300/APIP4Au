@@ -3,3 +3,5 @@
 *.db
 
 termial
+
+__pycache__
