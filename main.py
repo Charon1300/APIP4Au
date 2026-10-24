@@ -19,6 +19,8 @@ from contextlib import asynccontextmanager
 
 import models
 
+import etcd3
+
 #schemas
 from schemas import CharacterCreate, CharacterResponse, ButtonCreate, ButtonResponse, ButtonUpdate
 
@@ -30,11 +32,12 @@ async def lifespan(app: FastAPI):
     #gets rand number from range, doesn't include stop
     button_id = random.randrange(1, 3)
     prev_id = None
+    etcd = etcd3.client()
 
     #reads from prevNum to get yesterdays num
-    f = open("previousNum", "r")
-    prev_id = int(f.read())
-    f.close() 
+    val = etcd.get('/prevNum')
+    prev_id = val[0].decode("utf-8")
+    prev_id = int(prev_id)
 
     #if it is the same then get random from range not including prev_id
     if button_id == prev_id:
@@ -45,14 +48,10 @@ async def lifespan(app: FastAPI):
 
     
     #records currNum
-    f = open("currentNum", "w")
-    f.write(str(button_id))
-    f.close()
+    etcd.put('/currNum', str(button_id))
     yield
     #on shut down records pervNum 
-    f = open("previousNum", "w")
-    f.write(str(button_id))
-    f.close()
+    etcd.put('/prevNum', str(button_id))
     await engine.dispose()
 
 app = FastAPI(lifespan=lifespan)
@@ -92,10 +91,11 @@ async def post_page(request: Request, character_id: int, db: Annotated[AsyncSess
 @app.get("/P4UBD", include_in_schema=False, name="random")
 async def random_button(request: Request, db: Annotated[AsyncSession, Depends(get_db)]):
     
-    #currNum has the number for the button id 
-    f = open("currentNum", "r")
-    id = int(f.read())
-    f.close()
+    #currNum has the number for the button id
+    etcd = etcd3.client()
+    val = etcd.get('/currNum')
+    id = val[0].decode("utf-8")
+    id = int(id)
 
     #use said id to get button info
     result = await db.execute(select(models.Button).where(models.Button.id == id))
