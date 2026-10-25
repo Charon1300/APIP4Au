@@ -18,7 +18,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from contextlib import asynccontextmanager
 
 import models
-
 import etcd3
 
 #schemas
@@ -108,14 +107,14 @@ async def random_button(request: Request, db: Annotated[AsyncSession, Depends(ge
         
 
         id = button.id
-        name = button.name[:30]
-        damage = button.damage[:30]
-        guard = button.guard[:30]
-        startup = button.startup[:30]
-        active = button.active[:30]
-        recovery = button.recovery[:30]
-        onblock = button.onblock[:30]
-        attribute = button.attribute[:30]
+        name = button.name
+        damage = button.damage
+        guard = button.guard
+        startup = button.startup
+        active = button.active
+        recovery = button.recovery
+        onblock = button.onblock
+        attribute = button.attribute
         invuln = button.invuln[:50]
         image_file = button.image_file[:200]
         character_id = button.character_id
