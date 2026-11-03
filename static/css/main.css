@@ -104,5 +104,55 @@ td{
 }
 
 
+/*for phones vertical*/
+@media all and (orientation:portrait) {
+/* Style adjustments for portrait mode goes here */
+    body {
+      background: url(/media/background/P4AU_backgroundblur.png); 
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-attachment: scroll;
+      background-position: 35% center;
+      min-height: 150vh;
+      
+    }
 
+    #title {
+      text-align: center;
+      
+      background-color: rgb(152, 184, 11);
+      border-radius: 10px;
+      position:relative;
+      left: 80%;
+      margin: 40% -50px 20px 10px;
+      padding-bottom: 15px;
+      padding-left: 10px;
+      padding-right: 10px;
+      padding-top: 10px;
+      zoom: 3;
+    }
+
+    * {
+      font-size:large;
+    }
+    .Character {
+      zoom: 3;
+
+    }
+
+    table{
+
+      zoom:2;
+      
+    }
+
+    #bg-image{
+
+      margin-left: 20%;
+      margin-right: 20%;
+      position: relative;
+      left: 90%;
+      border-radius: 15%;
+    }
+}
 
